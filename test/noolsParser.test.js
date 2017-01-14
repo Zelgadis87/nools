@@ -85,7 +85,7 @@ it.describe("nools dsl parser", function (it) {
         it.should("resolve relative require paths", function () {
             var parsed = noolsParser.parse("global util = require('../util');", "./rules/test.nools");
             assert.equal(parsed.scope[0].name, 'util');
-            assert.equal(parsed.scope[0].body, "require('" + path.resolve("./rules", "../util") + "')");
+            assert.equal(parsed.scope[0].body, "require('" + path.resolve("./rules", "../util").replace(/\\/g, '/') + "')");
         });
 
         it.should("parse a member look up", function () {
@@ -133,7 +133,7 @@ it.describe("nools dsl parser", function (it) {
             it.should("parse a relative path and default to process.cwd()", function () {
                 var called = false;
                 fs.readFileSync = function (file, encoding) {
-                    assert.equal(file, path.resolve(process.cwd(), './test.nools'));
+                    assert.equal(file, path.resolve(process.cwd(), './test.nools').replace(/\\/g, '/'));
                     assert.equal(encoding, "utf8");
                     called = true;
                     return "";
@@ -145,7 +145,7 @@ it.describe("nools dsl parser", function (it) {
             it.should("parse a relative path and use the file path", function () {
                 var called = false;
                 fs.readFileSync = function (file, encoding) {
-                    assert.equal(file, path.resolve("./rules", './test.nools'));
+                    assert.equal(file, path.resolve("./rules", './test.nools').replace(/\\/g, '/'));
                     assert.equal(encoding, "utf8");
                     called = true;
                     return "";
@@ -157,7 +157,7 @@ it.describe("nools dsl parser", function (it) {
             it.should("parse a absolute path and not change the location ", function () {
                 var called = false;
                 fs.readFileSync = function (file, encoding) {
-                    assert.equal(file, "/rules/test.nools");
+                    assert.equal(file, path.resolve("/rules/test.nools").replace(/\\/g, '/'));
                     assert.equal(encoding, "utf8");
                     called = true;
                     return "";
@@ -169,7 +169,7 @@ it.describe("nools dsl parser", function (it) {
             it.should("should parse import with optional ';'", function () {
                 var called = false;
                 fs.readFileSync = function (file, encoding) {
-                    assert.equal(file, "/rules/test.nools");
+                    assert.equal(file, path.resolve("/rules/test.nools").replace(/\\/g, '/'));
                     assert.equal(encoding, "utf8");
                     called = true;
                     return "";
@@ -211,9 +211,9 @@ it.describe("nools dsl parser", function (it) {
                     ],
                     "scope": [],
                     "loaded": [
-                        require.resolve("./rules/import/import1.nools"),
-                        require.resolve("./rules/import/import2.nools"),
-                        require.resolve("./rules/import/import3.nools")
+                        require.resolve("./rules/import/import1.nools").replace(/\\/g, '/'),
+                        require.resolve("./rules/import/import2.nools").replace(/\\/g, '/'),
+                        require.resolve("./rules/import/import3.nools").replace(/\\/g, '/')
                     ],
                     "file": source
                 });
